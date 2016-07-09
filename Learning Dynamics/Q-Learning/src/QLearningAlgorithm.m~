@@ -1,0 +1,30 @@
+function [s Q bestActions path counter] = QLearningAlgorithm(s,Q, path)
+
+global nbActions gamma alpha goal actionsX actionsY;
+
+QValuesAroundCurrentPosition = zeros(1,8);
+bestActions = zeros(1);
+counter = 1;
+while s(1) ~= goal(1) || s(2) ~= goal(2) 
+    path{counter} = s; 
+    [bestAction reward] = epsGreedy(s, Q);
+    s_prime = [s(1)+actionsX(bestAction) s(2)+actionsY(bestAction)];
+    %s_prime = wind(s);
+    
+    for a = 1:nbActions
+        QValuesAroundCurrentPosition(a) = Q(s_prime(2), s_prime(1), a);
+    end
+    bestValueForNextAction = max(QValuesAroundCurrentPosition);
+    Q(s(1),s(2),bestAction) = Q(s(1),s(2),bestAction) + alpha*(reward + gamma*bestValueForNextAction - Q(s(1),s(2),bestAction));
+   
+     Q(1,:,bestAction)
+     bestAction
+     s
+     pause
+
+    s = s_prime;
+    counter = counter + 1;
+    %bestActions(s(1),s(2)) = (
+end
+path{counter} = s; 
+end

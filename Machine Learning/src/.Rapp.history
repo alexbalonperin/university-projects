@@ -1,0 +1,50 @@
+setwd('/Users/Alex/Desktop/Statistical Foundation of ML/Projet/')
+source('supervised_learning.R',print.eval=T)
+X.ts
+X.tild.ts
+,dim(X.ts)
+dim(X.ts)
+source('supervised_learning.R',print.eval=T)
+testSet
+source('confidence_intervalle.R',print.eval=T)
+dataSet
+model_lazy <- lazy(Y.tr~.,X.tr)
+Y.hat.ts_lazy <- predict(model_lazy,X.ts)
+sigma<-sd(Y.hat.ts_lazy)
+Y.hat.ts_lazy
+sigma<-sd(as.vector(Y.hat.ts_lazy))
+sigma<-sd(as.numeric(Y.hat.ts_lazy))
+sigma<- 1/(R-1)*sum((Y.hat.ts_lazy-mean(Y.hat.ts_lazy))^2)
+R<-3000
+sigma<- 1/(R-1)*sum((Y.hat.ts_lazy-mean(Y.hat.ts_lazy))^2)
+sigma<- 1/(R-1)*sum((Y.hat.ts_lazy-mean(as.numeric(Y.hat.ts_lazy)))^2)
+source('confidence_intervalle.R',print.eval=T)
+z.alpha
+rnorm(1)
+abs(rnorm(1))
+abs(rnorm(1)*10)
+abs(rnorm(1)*10%%10)
+abs((rnorm(1)*10)%%10)
+source('combine.R',print.eval=T)
+c
+source('combine.R',print.eval=T)
+c
+text
+c
+browser(text="forest")
+c
+source('combine.R',print.eval=T)
+dim(Y.hat.ts_lazy)
+length(Y.hat.ts_lazy)
+source('confidence_intervalle.R',print.eval=T)
+Y.tr
+X.tr
+dim(X.ts)
+source('combine.R',print.eval=T)
+setwd('Code/')
+source('supervised_learning.R',print.eval=T)
+time1
+source("supervised_learning.R",print.eval=T)
+clear
+source("supervised_learning.R",print.eval=T)
+source("supervised_learning.R",print.eval=T)

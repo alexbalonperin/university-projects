@@ -1,0 +1,19 @@
+function displayFig(Qa_current, indice, color, iteration)
+
+if
+figure 
+hold on;
+
+p = zeros(6,1);
+p(indice) = plot(iteration, Qa_current(indice), color,'Marker', '.', 'MarkerSize', 5);
+title('Action 1');
+%hold all;
+hold on;
+xlabel('iteration');
+ylabel('Qa');
+    
+
+% Annotate the point (-pi/4, sin(-pi/4))
+%text(0,70,'\leftarrow convergence point',...
+%     'VerticalAlignment','top')
+

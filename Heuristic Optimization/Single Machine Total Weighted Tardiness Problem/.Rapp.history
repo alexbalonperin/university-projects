@@ -1,0 +1,66 @@
+ls
+clear
+x <-1:12
+x
+t(x)
+setwd("/Users/Alex/Desktop/Heuristic Optimization/Projet/Heuristic_Projet1/")
+best-known <- read.table("wtbest100b.txt")
+best.known <- read.table("wtbest100b.txt")
+best.known
+a.cost <- read.table("results/ii-best-ex-rand.dat")$V1
+a.cost <- 100* (a.cost - best.known) / best.known
+a.cost
+b.cost <- read.table("results/ii-best-ins-rand.dat")$V1
+b.cost <- 100* (b.cost - best.known) / best.known
+b.cost
+t.test (a.cost, b.cost, paired=T)$p.value
+t.test (t(a.cost), t(b.cost), paired=T)$p.value
+t.test (a.cost[[1]], b.cost[[1]], paired=T)$p.value
+wilcox.test (a.cost[[1]], b.cost[[1]], paired=T)$p.value
+a.cost <- read.table("results2/ii-best-ex-rand.dat")$V1
+a.cost <- 100* (a.cost - best.known) / best.known
+b.cost <- read.table("results2/ii-best-ins-rand.dat")$V1
+b.cost <- 100* (b.cost - best.known) / best.known
+t.test (t(a.cost), t(b.cost), paired=T)$p.value
+t.test (a.cost[[1]], b.cost[[1]], paired=T)$p.value
+wilcox.test (a.cost[[1]], b.cost[[1]], paired=T)$p.value
+source?
+?source
+setwd("/Users/Alex/Desktop/Heuristic Optimization/Projet/Backup/Heuristic_Projet1/")
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+test <- c(1,0,NaN,2)
+test
+mean(test)[test != NaN]
+mean(test[test != NaN])
+mean(test[test != "NaN"])
+test <- c(4,6,NaN)
+mean(test[test != "NaN"])
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+a.cost
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)
+source("script_heuristic.R", print.eval=T)

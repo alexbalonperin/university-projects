@@ -1,0 +1,42 @@
+% Calcul du Coefficient de transmission
+% -------------------------------------
+% Recoit l'angle thi en DEGRE
+
+function Tm = coeffTransmission(thetaI)
+
+% Constantes
+%------------
+
+f    = 2.45E9;                                  % Fréquence de la norme IEEE 802.11n (Hz)
+mu0  = pi*4E-7;                                 % Perméabilité du vide
+eps0 = 8.84E-12;                                % Permittivité du vide
+epsr = 5;                                       % Permittivité relative du mur
+sigm = 0.1;                                     % Conductivité du mur (S/m)
+l    = 0,1;                                     % Epaisseur de mur
+
+w    = 2*pi*f;                                  % Pulsation (oméga) de la norme IEEE 802.11n
+epsm = eps0*epsr;                               % Permittivité du mur
+epsmb= epsm-i*sigm/w;                           % Permittivité complexe équivalente du mur (7.25)
+Z1   = sqrt(mu0/eps0)                           % Impédance de l'air = impédance du vide en EM (Ohms)               
+Z2   = sqrt(mu0/epsmb);                         % Impédance du mur (8.17) (Ohms)
+
+s    = l/cos(tht);                              % Distance parcourue dans le mur (m)
+thetaT  = asin(sqrt(eps0/epsmb)*sin(thetaI));         % Loi de Snell (8.5) : Angle de refraction "theta t" (degré)
+thetaI  = thetaI.*pi./180;                            % Thi en RADIAN !
+                                    
+B    = w*sqrt(mu0*eps0);
+alpha = w*sqrt(mu0*epsm/2)*(sqrt(1+(sigm/(w*epsm))^2)-1)^(1/2); % (7.35)
+beta = w*sqrt(mu0*epsm/2)*(sqrt(1+(sigm/(w*epsm))^2)+1)^(1/2);
+Bm = alpha + 1*i*beta;                                          % (7.32) Gamma = Bm
+
+e1 = exp(-1*i*Bm*s);                            % exponentielle 1
+e2 = exp(2*i*B*s*sin(tht)*sin(thi));            % exponentielle 2
+
+% Coefficient intermédiaire : formule (8.39)
+GT=(Z2*cos(thi)-Z1*cos(tht))/(Z2*cos(thi)+Z1*cos(tht));  
+%-------------------------------------------------------
+% Coefficient de Transmission formule (8.44)
+Tm=abs((1-GT.^2)*(e1)/(1-(GT.^2)*(e1.^2)*e2)); 
+%-------------------------------------------------------
+
+

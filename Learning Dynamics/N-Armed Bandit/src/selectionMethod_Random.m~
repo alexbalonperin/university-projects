@@ -1,0 +1,26 @@
+function [indice Qa actionCounter rewardVec] = selectionMethod_Random(Qa,actionCounter, rewardVec, rewardAvg)
+
+global Qa_star;
+
+
+%generate random integer
+%indice = randi([1 6],'int');
+a = 1;
+b = 7;
+indice = a + (b-a).*rand(1,1);
+indice = floor(indice);
+
+%get the reward according to random indice
+reward = normrnd(Qa_star(indice),1);
+rewardAvg = (rewardAvg + reward)/iteration;
+rewardVec = [rewardVec; rewardAvg];
+
+%number of time action is taken
+actionCounter(indice) = actionCounter(indice) + 1;
+
+%update quality for action "indice"
+Qa(indice) = (Qa(indice) + reward)/actionCounter(indice);
+
+
+
+

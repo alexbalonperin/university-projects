@@ -1,0 +1,28 @@
+function [log_lik fwd_messages] = forwardHMM(obj, data)
+
+left = HMM('left', 4)
+right = HMM
+
+log_lik = 0; totalTime = size(data,2); 
+fwd_messages = zeros(obj.noHidden, totalTime); 
+obsVec = zeros(obj.noHidden,1);
+% Loop over all time-slots:
+for t = 0:totalTime-1
+    % Calculate the observation matrix. 
+    % This amounts to calculating likelihoods based on observation model. 
+    for state = 1:obj.noHidden
+        obsVec(state) = obj.obsModels{state}.CalcLikelihood(data(:,t+1));
+    end
+    % Do ?forward iterations?:
+    if t==0 
+        fwd_messages(:, t+1) = diag(obsVec) * obj.priorHidden;
+    else
+        fwd_messages(:, t+1) = diag(obsVec) * obj.dynModel' * fwd_messages(:,t);
+    end
+    % Normalize: 
+    normalizer = sum(fwd_messages(:, t+1))); % Add error control: small value? 
+    fwd_messages(:, t+1) = fwd_messages(:, t+1) ./ normalizer; 
+    log_lik = log_lik + log(normalizer);
+end
+
+end

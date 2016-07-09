@@ -1,0 +1,156 @@
+classdef ObsModel < handle
+   properties (Access = private)
+       distr
+       mu
+       sigma
+       sig_val = 0.2;
+       c
+   end
+   
+   properties (Constant = true)
+       nb_component = 3
+   end
+   methods
+       function obj=ObsModel(d)
+           obj.distr = d;
+       end
+       
+       function probability_observation = distribution(obj,data)
+           
+           if strcmp(obj.distr,'MixtGauss')
+               if isempty(obj.sigma) && isempty(obj.mu)
+                   obj.c = ones(1,obj.nb_component)/obj.nb_component;
+                   data_size = size(data);
+                   obj.sigma = zeros(data_size(2),data_size(2),obj.nb_component);
+                   for comp=1:obj.nb_component
+                        obj.sigma(:,:,comp) = eye(data_size(2));
+                   end
+                   obj.mu = (rand(obj.nb_component,data_size(2)));
+                   %obj.mu = [13e-3 42e-3 32e-3;13e-3 42e-3 32e-3;13e-3 42e-3 32e-3];
+                   display('************************************************')
+                   display('INITIALISATION')
+                   display('************************************************')
+                   display('WEIGHTS')
+                   display('------------------------------------------------')
+                   display(obj.c)
+                   display('MEAN')
+                   display('------------------------------------------------')
+                   display(obj.mu)
+                   display('SIGMA')
+                   display('------------------------------------------------')
+                   display(obj.sigma)
+
+               end
+               fprintf('\n\n');
+               display('WEIGHTS')
+               display('------------------------------------------------')
+               display(obj.c)
+               display('MEAN')
+               display('------------------------------------------------')
+               display(obj.mu)
+               display('SIGMA')
+               display('------------------------------------------------')
+               display(obj.sigma)
+               probability_observation = gmdistribution(obj.mu,obj.sigma,obj.c);
+               probability_observation = pdf(probability_observation, data);
+               pause
+           elseif strcmp(obj.distr,'Gauss')
+               if isempty(obj.sigma) && isempty(obj.mu)
+                   data_size = size(data);
+                   obj.sigma = rand(data_size(2)).*eye(data_size(2));
+                   obj.mu = rand(1,data_size(2));
+               end
+               probability_observation = mvnpdf(data,obj.mu,obj.sigma);
+           else
+               error(strcat('Error: Distribution ',obj.distr,' does not exist'))
+           end
+       end
+       function likelihood = CalcLikelihoodMixture(obj, data, k) 
+            likelihood = mvnpdf(data,obj.mu(k,:),obj.sigma(:,:,k));
+       end
+       
+       function likelihood = CalcLikelihood(obj, data) 
+            likelihood = obj.distribution(data);   
+       end
+       
+       function nb_comp = getNbComp(obj)
+           nb_comp = obj.nb_component;
+       end
+       
+       function mixProp=getMixingProportion(obj)
+           mixProp = obj.c;
+       end
+       
+       function setMixingProportion(obj,gamma, state)
+           normalizer = zeros(1,ObsModel.nb_component);
+           for k=1:ObsModel.nb_component
+               normalizer(k) = sum(gamma(state,:,k));
+           end
+           for k=1:ObsModel.nb_component
+               obj.c(k) = normalizer(k)/sum(normalizer);
+           end
+%            display('------------------------------------------------')
+%            display('UPDATING WEIGHT')
+%            display(obj.c)
+%            display('------------------------------------------------')
+         
+       end
+       
+       function mu = getMu(obj)
+           mu = obj.mu;
+       end
+       
+       function sigma = getSigma(obj)
+           sigma = obj.sigma;
+       end
+       
+       function setMu(obj, gamma, observations)
+           for i=1:size(observations,2)
+                obj.mu(i) = sum(gamma.*observations(:,i)')/sum(gamma);
+           end
+           display('------------------------------------------------')
+           display('UPDATING MU')
+           display(obj.mu)
+           display('------------------------------------------------')
+       end
+       
+       function setSigma(obj, gamma, observations)
+           for i=1:size(observations,2)
+               obj.sigma(i,i) = sum((gamma.*(observations(:,i) - obj.mu(i))')...
+                   .*(observations(:,i) - obj.mu(i))')/sum(gamma);
+           end
+           display('------------------------------------------------')
+           display('UPDATING SIGMA')
+           display(obj.sigma)
+           display('------------------------------------------------')
+           
+       end
+       
+       function setMuMixture(obj, gamma, observations, state)
+           for k=1:ObsModel.nb_component
+               for i=1:size(observations,2)
+                   obj.mu(k,i) = sum(gamma(state,:,k).*observations(:,i)')/sum(gamma(state,:,k));
+               end
+           end
+           display('------------------------------------------------')
+           display('UPDATING MU')
+           display(obj.mu)
+           display('------------------------------------------------')
+       end
+       
+       function setSigmaMixture(obj, gamma, observations, state)
+           for k=1:obj.nb_component
+               for i=1:size(observations,2)
+                   obj.sigma(i,i,k) =sum((gamma(state,:,k).*(observations(:,i) - obj.mu(k,i))')...
+                       .*(observations(:,i) - obj.mu(k,i))')/sum(gamma(state,:,k));
+               end
+           end
+           display('------------------------------------------------')
+           display('UPDATING SIGMA')
+           display(obj.sigma)
+           display('------------------------------------------------')
+           
+       end
+       
+   end
+end

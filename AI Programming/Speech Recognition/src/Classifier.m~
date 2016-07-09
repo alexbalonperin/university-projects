@@ -1,0 +1,202 @@
+classdef Classifier
+   properties (Access = private)
+       models;
+       noHiddenLeft = 3;
+       noHiddenRight = 3;
+       noHiddenStart = 5;
+       noHiddenStop = 4;
+       distr = 'MixtGauss';
+       nbWords = 4;
+       threshold = 1e-6;
+       utilities
+       encoder
+       maxiter = 100;
+       nb_files = 35;   %number of query files
+       nb_observations;
+   end
+   
+   methods
+       function obj = Classifier  
+            obj.models = [HMM('left', obj.noHiddenLeft, obj.distr),...
+                HMM('right', obj.noHiddenRight, obj.distr), ...
+                HMM('stop', obj.noHiddenStop, obj.distr), ...
+                HMM('go', obj.noHiddenStart, obj.distr)];
+            obj.utilities = Utilities();
+            obj.encoder = Encoding();
+       end
+       
+       
+       function gamma = calcGammaMixture(obj, fwd_msg, bwd_msg,model,data)
+            gamma = zeros(size(fwd_msg));
+            distrib = zeros(model.getNoHidden,obj.nb_observations,ObsModel.nb_component);
+            c = zeros(model.getNoHidden,ObsModel.nb_component);
+            normalizer = zeros(model.getNoHidden,obj.nb_observations);
+            norm = zeros(ObsModel.nb_component,obj.nb_observations);
+            
+            for state=1:size(fwd_msg,1)
+                c(state,:) = model.getObsModels{state}.getMixingProportion;
+                for k=1:ObsModel.nb_component 
+                    distrib(state,:, k) = model.getObsModels{state}.CalcLikelihoodMixture(data,k);
+                    norm(k,:) = c(state,k)*distrib(state,:,k);
+                end
+                for k=1:ObsModel.nb_component 
+                    weighted_norm = c(state,k)*distrib(state,:,k);
+                    normalizer(state,:) = sum(norm,1);
+                    gamma(state,:,k) = (fwd_msg(state,:).*bwd_msg(state,:))/sum(fwd_msg(state,:).*bwd_msg(state,:))...
+                        .*(weighted_norm./normalizer(state,:));
+                end 
+            end
+       end 
+       
+       function gamma = calcGamma(obj, fwd_msg, bwd_msg)
+            gamma = zeros(size(fwd_msg));
+            for i=1:size(fwd_msg,1)
+                gamma(i,:) = (fwd_msg(i,:).*bwd_msg(i,:))/sum(fwd_msg(i,:).*bwd_msg(i,:));
+            end 
+       end  
+       
+       
+       function xi = calcXi(obj,fwd_msg, bwd_msg, model,data)
+           xi = zeros(model.getNoHidden,model.getNoHidden,obj.nb_observations);
+           dynModel = model.getDynModel;
+           obsVec = zeros(model.getNoHidden,1);
+           for t=1:obj.nb_observations-1
+             for state = 1:model.getNoHidden
+                obsVec(state) = model.getObsModels{state}.CalcLikelihood(data(t+1,:));
+             end
+             normalizer  = 0;
+             for k=1:model.getNoHidden
+               for l=1:model.getNoHidden
+                   normalizer = normalizer + fwd_msg(k,t)*dynModel(k,l)*diag(obsVec(l))*bwd_msg(l,t+1); 
+               end
+             end
+             for i=1:model.getNoHidden
+               for j=1:model.getNoHidden
+                   xi(i,j,t) = (fwd_msg(i,t)*dynModel(i,j)*diag(obsVec(j))*bwd_msg(j,t+1))/normalizer;  
+               end
+             end
+           end
+       end
+       
+       function [gamma , log_likelihood, xi] = expectation(obj, observations, model)
+            [log_likelihood, fwd_msg, bwd_msg] = HMM.backward_forward(model,observations);
+   
+            if strcmp(obj.distr,'MixtGauss')
+                gamma = obj.calcGammaMixture(fwd_msg, bwd_msg, model,observations);
+            elseif strcmp(obj.distr, 'Gauss')
+                gamma = obj.calcGamma(fwd_msg, bwd_msg);
+            else
+                error(strcat('Error: Distribution ',obj.distr,' does not exist'))
+            end
+            gamma
+            xi = obj.calcXi(fwd_msg,bwd_msg,model,observations);
+            xi
+            pause
+       end
+       
+       function maximisation(obj, observations, model, gamma, xi)
+           for state=1:model.getNoHidden
+               
+%            display('************************************************')
+%            fprintf('STATE NUMBER %d\n',state)
+%            display('************************************************')
+               if strcmp(obj.distr,'MixtGauss')
+                   model.getObsModels{state}.setMuMixture(gamma, observations,state); 
+                   model.getObsModels{state}.setSigmaMixture(gamma, observations,state); 
+                   model.getObsModels{state}.setMixingProportion(gamma,state);
+               elseif strcmp(obj.distr, 'Gauss')    
+                   model.getObsModels{state}.setMu(gamma(state,:), observations); 
+                   model.getObsModels{state}.setSigma(gamma(state,:), observations); 
+               else
+                    error(strcat('Error: Distribution ',obj.distr,' does not exist'));
+               end  
+           %display('************************************************')
+           
+           end
+           model.setPriorHidden(gamma);
+           model.setDynModel(xi, gamma);
+       end
+       
+       function EM(obj, observations,model)
+           log_likelihood = -inf(obj.maxiter,1);
+           converged = false;
+           t=1;
+           while ~converged && t < obj.maxiter
+               t=t+1;
+               [gamma, log_likelihood(t), xi] = obj.expectation(observations, model); 
+               obj.maximisation(observations, model, gamma, xi);
+               converged = log_likelihood(t) - log_likelihood(t-1) < obj.threshold;%*abs(log_likelihood(t));
+               
+           end
+            if converged
+                fprintf('Converged in %d steps.\n',t-1);
+                fprintf('Log-likelihood for the word %s: %f\n',model.getWord(),log_likelihood(t-1));
+            else
+                fprintf('Not converged in %d steps.\n',obj.maxiter);
+            end
+       end
+       
+       function training(obj)
+           for i=1:size(obj.models,2)
+               %concatFilesPath = obj.utilities.concatFilesWAV(obj.models(i).getWord);
+               concatFilesPath = obj.utilities.concatFilesWAV('stop');
+               
+               %observations = obj.encoder.encodeSignal(concatFilesPath);
+               observations = obj.encoder.encodeSignal('files/soundfile-wav/stop_');
+               obj.nb_observations = size(observations,1);
+%                options = statset('Display','final');
+%                result = gmdistribution.fit(observations,3,'Options',options);
+               %result
+               %[label,model,llh] = emgm(observations',[1])
+               format short
+               observations*1000
+               pause
+               obj.EM(observations, obj.models(i));
+           end
+       end
+       
+       function classify(obj)
+           fid = fopen('files/querySolution.txt');
+           solution = fgetl(fid);
+           success = 0;
+           for file_nb=0:obj.nb_files
+               fprintf('\n\nFile number %d\n',file_nb); 
+               observations = obj.encoder.encodeSignal(strcat('files/query-wav/query_0.wav'));
+               
+               ll_vec = zeros(1,size(obj.models,2));
+               for i=1:size(obj.models,2)
+                   log_likelihood = -inf(1,obj.maxiter);
+                   converged = false;
+                   t=1;
+                   while ~converged && t < obj.maxiter
+                       t=t+1;
+                       [log_likelihood(t), ~, ~] = HMM.backward_forward(obj.models(i),observations);
+                       converged = log_likelihood(t) - log_likelihood(t-1) < obj.threshold*abs(log_likelihood(t));
+                   end
+                    if converged
+%                         fprintf('Converged in %d steps.\n',t-1);
+%                         fprintf('Log-likelihood for the word %s: %f\n',obj.models(i).getWord(),log_likelihood(t-1));
+                    else
+%                         fprintf('Not converged in %d steps.\n',obj.maxiter);
+                    end
+                    ll_vec(i) = log_likelihood(t-1);
+               end
+               [log_lik idx] = max(ll_vec);
+%                fprintf('The word is %s with likelihood %f\n',obj.models(idx).getWord, log_lik);
+               if ischar(solution)
+                    solution = fgetl(fid);
+               end
+               if(strcmp(solution,sprintf('%s\t%s',int2str(file_nb),upper(obj.models(idx).getWord))))
+                   success = success +1;
+               end
+           end   
+           
+           display('****************************************************')
+           fprintf('Percentage of success : %2.2d%c \n',(success/obj.nb_files)*100,'%');
+           display('****************************************************')
+           fclose(fid);
+       end
+       
+       
+   end
+end

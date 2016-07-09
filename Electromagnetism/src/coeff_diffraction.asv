@@ -1,0 +1,35 @@
+function D = coeff_diffraction (phi, phi2, s, s2)
+
+% angle en degré et vérifie bien de prendre le bon angle.
+% Constantes
+%------------
+
+f    = 2.45E9;                                  % Fréquence de la norme IEEE 802.11n (Hz)
+mu0  = pi*4E-7;                                 % Perméabilité du vide
+eps0 = 8.84E-12;                                % Permittivité du vide
+epsr = 5;                                       % Permittivité relative du mur
+sigm = 0.1;                                     % Conductivité du mur (S/m)
+l    = 0,1;                                     % Epaisseur de mur
+
+w    = 2*pi*f;                                  % Pulsation (oméga) de la norme IEEE 802.11n
+epsm = eps0*epsr;                               % Permittivité du mur
+epsmb= epsm-1i*sigm/w;                           % Permittivité complexe équivalente du mur (7.25)
+
+phi  = phi *pi/180;                             % Mettre en radian ! 
+phi2 = phi2 *pi/180;                            % Mettre en radian !
+L    = (s*s2)/(s+s2);                           % (8.80)
+delta= pi-(phi-phi2);
+
+B    = w*sqrt(mu0*eps0);
+alpha= w*sqrt(mu0*epsm/2)*(sqrt(1+(sigm/(w*epsm))^2)-1)^(1/2); % (7.35)
+beta = w*sqrt(mu0*epsm/2)*(sqrt(1+(sigm/(w*epsm))^2)+1)^(1/2);
+Bm   = alpha + 1i*beta;                                       % (7.32) Gamma = Bm
+
+exp1 = exp(-1i*pi/4);
+
+% Calcul numérique de la fonction de Fresnel : formule (8.81)
+ft   = Ft(2*Bm*l*sin(delta/2)*sin(delta/2));     % Bm ou B ???
+%------------------------------------------------------------
+% Calcul du coefficient de Diffraction
+D    = abs(-((exp1)*ft)/(2*sqrt(Bm*2*pi*l)*sin(delta/2)));
+%------------------------------------------------------------

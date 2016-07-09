@@ -1,0 +1,7 @@
+Vous conviendrez que les méthodes de cet objet peuvent s'avérer tr?s utiles !
+Nous venons d'en essayer quelques-unes et nous avons m?me listé les sous-fichiers et sous-dossiers de nos lecteurs racines. 
+
+Vous pouvez aussi effacer le fichier grâce la méthode delete() , créer des répertoires avec la méthode mkdir() (le nom passé à l'objet ne devra pas avoir de ".")...
+
+Maintenant que vous en savez un peu plus sur cet objet, nous allons pouvoir commencer à travailler avec notre fichier créé précédemment !
+

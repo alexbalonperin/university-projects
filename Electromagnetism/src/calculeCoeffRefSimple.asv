@@ -1,0 +1,13 @@
+function [Rm Tm] calculeCoeffRefSimple (ref, TX, RX)
+
+    [counterR intersectionTab] = checkIntersection(ref, RX);        
+   lastIntersection = intersectionTab(1, :);
+    for k = 1 : length(intersectionTab)
+        if distance(intersectionTab(i,:),RX) < distance (lastIntersection,RX)
+            lastIntersection = intersectionTab(i,:);
+        end
+    end
+    d_n = distance (lastIntersection,RX);
+    Tm = coeffTransmission(thetaI);
+    Rm = coeffReflexion(thetaI);
+end

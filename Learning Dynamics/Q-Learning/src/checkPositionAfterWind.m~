@@ -1,0 +1,12 @@
+function [x y] = checkPositionAfterWind(position)
+
+global ymax actionsX actionsY;
+
+if position(2) > ymax
+    num = ceil(2*rand());
+    if num == 1
+        action =
+
+
+
+end

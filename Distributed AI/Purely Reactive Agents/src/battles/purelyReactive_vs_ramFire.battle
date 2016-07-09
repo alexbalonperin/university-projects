@@ -1,0 +1,9 @@
+#Battle Properties
+#Thu Feb 16 17:39:50 CET 2012
+robocode.battle.numRounds=10
+robocode.battleField.width=800
+robocode.battle.gunCoolingRate=0.1
+robocode.battle.selectedRobots=sample.RamFire,robots.PurelyReactiveTank*
+robocode.battle.rules.inactivityTime=450
+robocode.battle.hideEnemyNames=false
+robocode.battleField.height=600

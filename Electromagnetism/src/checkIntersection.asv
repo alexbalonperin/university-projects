@@ -1,0 +1,86 @@
+function [counter intersectionTab] = checkIntersection(pt1,pt2)
+
+global vec;
+
+% dist = [];
+intersection  = [0 0];
+counterH = 0;
+counterV = 0;
+intersectionTab = [];
+for i = 1 : length(vec)
+   xinit = vec(i,1);
+   yinit = vec(i,2);
+   xfin = vec(i,3);
+   yfin = vec(i,4);
+   
+   hasIntersection = false;
+   
+     %cas horizontal
+    if yinit == yfin
+       if pt2(1) ~= pt1(1)
+                xinter = droite(pt1(1), pt1(2), pt2(1), pt2(2), yinit,'hor');
+                entreRetE = ( pt1(2) < yinit && pt2(2) > yinit ) || ( pt1(2) > yinit && pt2(2)<yinit);
+                
+                rencontreUnMur = xinit < xinter && xinter < xfin  ;
+                if entreRetE && rencontreUnMur
+                    intersection = [xinter yinit];
+                    hasIntersection = true;
+%                     plot ( xinter, yinit, 'ro');
+                        counter = counter + 1 ;
+                end
+       else
+             %si l'onde rencontre un mur
+              if  ((yinit<pt1(2) && yinit>pt2(2)) || (yinit>pt1(2) && yinit<pt2(2))) && ( pt2(1)>xinit && pt2(1)<xfin ) 
+%                     plot ( pt2(1), yinit, 'o');
+                      intersection = [xinit yinit];
+                       hasIntersection = true;
+               end  
+        end
+    end
+  
+     %cas vertical
+    if xinit == xfin
+         if pt2(1) ~= pt1(1)
+            yinter = droite(pt1(1), pt1(2), pt2(1), pt2(2),xinit, 'ver');
+            entreRetE = ( pt1(1) < xinit && pt2(1) > xinit ) || ( pt1(1) > xinit && pt2(1)<xinit);
+            rencontreUnMur = (yinit < yinter && yinter < yfin);
+            if entreRetE && rencontreUnMur
+                 intersection = [xinit yinter];
+%                  plot ( xinit,yinter, 'go');
+                  hasIntersection = true;
+            end
+         else 
+             %si l'onde rencontre un mur           
+              if  ((xinit<pt1(1) && xinit>pt2(1)) || (xinit>pt1(1) && xinit<pt2(1))) && ( pt2(2)>yinit && pt2(2)<yfin ) 
+%                     plot ( xinit, pt2(2), 'o');
+                     intersection = [xinit yinit];
+                      hasIntersection = true;
+               end 
+         end
+    end
+
+% ATTENTION
+    if hasIntersection        
+%         x = intersection(1);
+%         y = intersection(2);
+        intersectionTab = [intersectionTab ; intersection ];
+%         d = distance ( pt1, intersection );
+%         dist = [dist ;d];
+       
+
+    end
+end
+
+% if length(dist) ~= 1
+%     dist = sort(dist)
+%     distP2P = dist(1);
+%     for i = 1 : length(dist)
+%         distP2P = [distP2P ; dist(i+1) - dist(i)];
+%     end
+%     intersection = distP2P(end);
+% else
+%     intersection = dist(1);
+% end
+end
+
+

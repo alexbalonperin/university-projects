@@ -1,0 +1,26 @@
+function E_n = calculeChampRefSimple (ref, TX, RX, thetaI)
+   global resultat;
+   
+    [counterEH counterEV senfou]= checkIntersection(ref, TX);
+    Tm1 = coeffTransmission(pi/2- thetaI)^counterEH *coeffTransmission(thetaI)^counterEV;
+    
+    [counterRH counterRV intersectionTab] = checkIntersection(ref, RX);        
+    if size(intersectionTab)~=[0,0]
+        lastIntersection = intersectionTab(1, :);
+        
+        for k = 1 : counterRH+counterRV
+            if distance(intersectionTab(k,:),RX) < distance (lastIntersection,RX)
+                lastIntersection = intersectionTab(k,:);
+            end
+        end
+          d_n = distance (lastIntersection,RX);
+    else
+       d_n = distance(ref,RX);
+    end
+     
+    Rm = coeffReflexion(thetaI);
+    Tm2 = coeffTransmission(thetaI)^counterR; % attention aux angles
+    Tm = Tm1 * Tm2;
+    E_n = Tm*Rm*En(d_n);
+    resultat(RX(1),RX(2)) = resultat(RX(1),RX(2)) + E_n ;
+end

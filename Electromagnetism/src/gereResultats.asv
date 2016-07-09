@@ -1,0 +1,83 @@
+function gereResultats(Resultat)
+global vec longueurPlan hauteurPlan ; 
+%créer les matrices de réception lorsqu'il y a trois émetteurs
+
+phaseDeCalculLancee = 1 
+counter = 1 ;
+Puissance3Emetteurs = {};
+% Debit3Emetteurs = {};
+
+for i = 1 : length(Resultat)
+    for j = 1 : length(Resultat)
+        for k = 1 : length(Resultat)
+            if i~=j && j~=k && k~=i
+                matriceP = zeros (longueurPlan-1,hauteurPlan-1);
+%                 matriceD = zeros (longueurPlan-1,hauteurPlan-1);
+                for m = 1 : longueurPlan-1
+                    for n = 1 : hauteurPlan-1
+                       maximumP = max(Resultat{i}{1}(m,n),max(Resultat{j}{1}(m,n),Resultat{k}{1}(m,n)));
+                        matriceP(m,n) = maximumP;
+%                         maximumD = max(Resultat{i}{2}(m,n),max(Resultat{j}{2}(m,n),Resultat{k}{2}(m,n)));
+%                         matriceD(m,n) = maximumD;
+                    end
+                end
+                Puissance3Emetteurs{counter} = { matriceP Resultat{i}{3} Resultat{j}{3} Resultat{k}{3} };
+%                 Debit3Emetteurs{counter} = { matriceD Resultat{i}{3} Resultat{j}{3} Resultat{k}{3} };
+                counter = counter + 1 ;
+            
+            end
+        end
+    end
+end
+
+%trouver meilleur dans les deux cas
+meilleureMoyenneP = 1 ; 
+meilleurEcartTypeP = 1 ;
+tempP = zeros(longueurPlan*hauteurPlan)  ;
+temp2P = zeros(longueurPlan*hauteurPlan);
+% meilleureMoyenneD = 1 ; 
+% meilleurEcartTypeD = 1 ;
+% tempD = zeros(longueurPlan*hauteurPlan)  ;
+% temp2D = zeros(longueurPlan*hauteurPlan);
+
+for i = 1 : length(Puissance3Emetteurs)
+        if mean(mean(Puissance3Emetteurs{meilleureMoyenneP}{1})) < mean(mean(Puissance3Emetteurs{i}{1}))
+            meilleureMoyenneP = i;
+        end
+%          if mean(mean(Debit3Emetteurs{meilleureMoyenneD}{1})) < mean(mean(Debit3Emetteurs{i}{1}))
+%             meilleureMoyenneD = i;
+%          end
+    
+    counter1=1;
+    for m = 1 : longueurPlan-1
+        for n = 1 : hauteurPlan-1
+            tempP(counter1) = Puissance3Emetteurs{i}{1}(m,n);                    % celui qu'on teste
+            temp2P(counter1) = Puissance3Emetteurs{meilleurEcartTypeP}{1}(m,n);   % l'indice qui a l ecart type le plus petit actuellement
+%             tempD(counter1) = Debit3Emetteurs{i}{1}(m,n);                    % celui qu'on teste
+%             temp2D(counter1) = Debit3Emetteurs{meilleurEcartTypeD}{1}(m,n);   % l'indice qui a l ecart type le plus petit actuellement
+            counter1 = counter1+1;
+        end
+    end
+    % a virer
+%     [sqrt(var(tempP)) i]
+%     [sqrt(var(temp2P)) meilleurEcartTypeP]
+    if  sqrt(var(tempP')) < sqrt(var(temp2P'))
+        meilleurEcartTypeP = i;
+    end
+%     if  sqrt(var(tempD')) < sqrt(var(temp2D'))
+%         meilleurEcartTypeD = i;
+%     end
+end
+
+meilleurEcartTypeP = meilleurEcartTypeP
+meilleureMoyenneP = meilleureMoyenneP
+
+% meilleurEcartTypeD = meilleurEcartTypeD
+% meilleureMoyenneD = meilleureMoyenneD
+
+Gui_project_ZC(vec,Puissance3Emetteurs{meilleureMoyenneP}{1},[Puissance3Emetteurs{meilleureMoyenneP}{2}; Puissance3Emetteurs{meilleureMoyenneP}{3} ;Puissance3Emetteurs{meilleureMoyenneP}{4}]);
+Gui_project_DR(vec,Debit3Emetteurs{meilleureMoyenneD}{1},[Puissance3Emetteurs{meilleureMoyenneD}{2}; Puissance3Emetteurs{meilleureMoyenneD}{3} ;Puissance3Emetteurs{meilleureMoyenneD}{4}]);
+positionZCmoyenneP = [Puissance3Emetteurs{meilleureMoyenneP}{2}; Puissance3Emetteurs{meilleureMoyenneP}{3} ;Puissance3Emetteurs{meilleureMoyenneP}{4}]
+% positionZCmoyenneD = [Debit3Emetteurs{meilleureMoyenneD}{2}; Debit3Emetteurs{meilleureMoyenneD}{3} ;Debit3Emetteurs{meilleureMoyenneD}{4}]
+
+end

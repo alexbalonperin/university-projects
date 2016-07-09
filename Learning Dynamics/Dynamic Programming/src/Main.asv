@@ -1,0 +1,37 @@
+classdef Main
+    %MAIN Summary of this class goes here
+    %   Detailed explanation goes here
+    
+    properties(Constant)
+        theta = 0.1;
+        gamma = 0.9;
+        R1 = [1 0];
+        R2 = [1 0];
+        R3 = [-2 2];
+        R4 = [-2 0];
+        R5 = [2 0];
+        
+        P1 = [1 1];
+        P2 = [1 0];
+        P3 = [1 1];
+        P4 = [1 0];
+        P5 = [1 0];
+        
+        
+    end
+    
+    methods
+        function  main
+            s1 = State(R1,P1);
+            s2 = State(R2,P2);
+            s3 = State(R3,P3);
+            s4 = State(R4,P4);
+            s5 = State(R5,P5);
+            
+            states = [
+            
+        end
+    end
+    
+end
+

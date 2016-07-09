@@ -1,0 +1,22 @@
+function [indice Qa actionCounter reward] = selectionMethod_Greedy(Qa,actionCounter)
+
+global Qa_star nbActions;
+
+QaTemp = Qa(1,1:nbActions);
+
+
+%find action with maximum quality
+maxQa = max(QaTemp);
+indice = find(maxQa == QaTemp);
+
+%get the reward according to random indice
+reward = normrnd(Qa_star(indice),1);
+rewardAvg = (rewardAvg + reward)/iteration;
+rewardVec = [rewardVec; rewardAvg];
+
+%number of time action is taken
+actionCounter(indice) = actionCounter(indice) + 1;
+
+%update quality for action "indice"
+Qa(indice) = (Qa(indice) + reward)/actionCounter(indice);
+

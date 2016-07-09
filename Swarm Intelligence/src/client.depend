@@ -1,0 +1,80 @@
+# depslib dependency file v1.0
+1234371844 source:c:\champ2009client-cpp\carstate.cpp
+	"CarState.h"
+
+1234371844 c:\champ2009client-cpp\carstate.h
+	<iostream>
+	<sstream>
+	<cstring>
+	<cassert>
+	"SimpleParser.h"
+
+1234371844 c:\champ2009client-cpp\simpleparser.h
+	<iostream>
+	<sstream>
+	<cstring>
+
+1275339076 source:c:\champ2009client-cpp\psodriver.cpp
+	"PSODriver.h"
+
+1275169033 c:\champ2009client-cpp\psodriver.h
+	<iostream>
+	<cmath>
+	<ctime>
+	"BaseDriver.h"
+	"CarState.h"
+	"CarControl.h"
+	"SimpleParser.h"
+	"WrapperBaseDriver.h"
+	"Particle.h"
+
+1274647226 c:\champ2009client-cpp\basedriver.h
+	<iostream>
+
+1234371844 c:\champ2009client-cpp\carcontrol.h
+	<iostream>
+	<sstream>
+	<cstring>
+	<cassert>
+	"SimpleParser.h"
+
+1274646550 c:\champ2009client-cpp\wrapperbasedriver.h
+	"CarState.h"
+	"CarControl.h"
+	"BaseDriver.h"
+
+1234371844 source:c:\champ2009client-cpp\simpleparser.cpp
+	"SimpleParser.h"
+
+1274647466 source:c:\champ2009client-cpp\wrapperbasedriver.cpp
+	"WrapperBaseDriver.h"
+
+1275340445 source:c:\champ2009client-cpp\client.cpp
+	<WinSock.h>
+	<netdb.h>
+	<netinet/in.h>
+	<unistd.h>
+	<iostream>
+	<cstdlib>
+
+1234371844 source:c:\champ2009client-cpp\carcontrol.cpp
+	"CarControl.h"
+
+1275251042 source:c:\champ2009client-cpp\simpledriver.cpp
+	"SimpleDriver.h"
+
+1274647588 c:\champ2009client-cpp\simpledriver.h
+	<iostream>
+	<cmath>
+	"BaseDriver.h"
+	"CarState.h"
+	"CarControl.h"
+	"SimpleParser.h"
+	"WrapperBaseDriver.h"
+
+1275081796 source:c:\champ2009client-cpp\particle.cpp
+	"particle.h"
+
+1275165435 c:\champ2009client-cpp\particle.h
+	<iostream>
+

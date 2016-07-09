@@ -1,0 +1,121 @@
+clear all;
+close all;
+clc;
+figure;
+hold on;
+
+%Variables physiques
+global frequence  eps_0  mu_0  sigma  R_a P_TX lambda B h_e epsR l; 
+%Variables de localisation
+global vec TX crois champ hauteurPlan longueurPlan dessin; 
+
+frequence = 2.45E9;                             %fréquence du réseau 802.11n [GHz]
+sigma = 0.1;                                    %conductivité du mur [S/m]
+epsR = 5;                                       %permittivité relative du mur
+l    = 0.1;                                     % Epaisseur de mur
+R_ar = 73;
+R_al = 0;
+R_a = R_ar + R_al;                                       %Résistance d'antenne [Ohms]
+eps_0 = 8.854E-12;                              %Permittivité du vide [F/m]
+mu_0 = pi*4E-7;                                 %Perméabilité du vide [H/m]
+P_injectee = 10;                                %Puissance injectée dans l'antenne [dBm]
+longueuerCable = 1;                             % [m]
+Attenuation = 1;                                %Atténuation dans le câble [dB/m]
+
+P_TX = 7.94E-3;                                 %Puissance émise par l'antenne [W]
+                                                 %Puissance : en décibel --> P[dBm] = 10 log P[W]/1mW
+lambda = 1/(sqrt(eps_0*mu_0)*frequence);
+B = 2*pi/lambda;
+thetaRepere = pi/2;                              %pour un repère sphérique nous sommes dans le cas theta = pi/2
+h_e = - lambda/pi * ...                          % hauteur equivalente = -lambda/pi après simplification
+    cos(pi/2 * cos(thetaRepere))/(sin(thetaRepere))^2;                                                
+
+%Chargement du plan
+% hauteurPlan = 46+1;
+% longueurPlan = 42+1;
+% vec = Plan;
+hauteurPlan = 10+1;
+longueurPlan = 20+1;
+vec = planSimple;
+
+%intersection entre les murs et aretes des portes 
+crois = croisements;
+[ptinit ptfin] = aretesPortes;
+
+%vecteurs contenant les puissances et débits en chaque point pour chaque
+%position de l'émetteur
+vecPuissance = {};
+vecDebit = {};
+Resultat = {};
+counter 
+dessin = false;
+pas = 1;
+tic
+% for m = 1 : longueurPlan
+%     for n = 1 : hauteurPlan
+%         %VÃ©rifie qu'on est pas sur un mur avant de positionner le rÃ©cepteur
+%         eSurLeMur = false;
+%         for k = 1 : length(vec)
+%             if vec(k,1) <= m && vec(k,2) <= n && m <= vec(k,3)  &&  n <= vec(k,4)
+%                 eSurLeMur = true;
+%                 break;
+%             end
+%         end
+%    
+%         %VÃ©rifie aussi qu'on est pas en zone rouge avant de placer le
+%         %rÃ©cepteur
+%         dansZoneRouge = (m >= 13 && n >= 4 && n <= 34 && m <= 27);
+%         if ~dansZoneRouge && ~eSurLeMur  
+            m = 5;
+            n=7;
+            TX = [m n];
+
+            %Matrice des résultats contenant les puissances et le champ recues au recepteur
+            champ = zeros (longueurPlan,hauteurPlan);
+%             puissance = zeros(longueurPlan,hauteurPlan);
+            %Dessin emetteur 
+%             plot(TX(1), TX(2), 'black', 'Marker', '.', 'MarkerSize' ,20); 
+
+            %parcourt le plan complet avec le recepteur
+            for i = 1  : pas: longueurPlan
+                for j = 1  :pas: hauteurPlan
+                    %VÃ©rifie aussi qu'on est pas en zone rouge avant de placer le
+                    %rÃ©cepteur
+                   % dansZoneRouge = (i >= 13 && j >= 4 && j <= 34 && i <= 27);
+                    %if ~dansZoneRouge   
+      
+%                            RX = [12 5.8];
+                        RX = [i-1 j-1]
+                        
+                        %reflexions
+                        reflexionDouble(TX,RX,1);
+                        reflexionSimple(TX,RX,1);
+                        ondeDirecte(TX,RX,1);
+                        diffraction(TX, RX, ptinit, ptfin);
+%                     break;
+                    %end
+                end 
+%                 break;
+                
+            end        
+%         end     
+        TX  = [TX(1)-1 TX(2)-1];
+        vecPuissance{m,n} = calculPuissance;
+        Gui_project_ZC(vec,vecPuissance{m,n},TX);
+        vecDebit{m,n} = calculDebit(vecPuissance{m,n});
+        Gui_project_DR(vec,vecDebit{m,n},TX)
+
+%     end
+% end
+
+toc
+
+%PARAMETRES: 
+%frÃ©quence du rÃ©seau : 2.45 GHz
+%mur: epaisseur : 0.1m
+%     permittivitÃ© relative: epsR = 5
+%     conductivitÃ© : sigma = 0.1 S/m
+%cable: 1m
+%       impÃ©dance caractÃ©ristique: omega = 50 ohms
+%       attÃ©nuation : 1dB/m
+%antenne : dipole lambda/2 sans perte pas adaptÃ©e

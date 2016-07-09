@@ -1,0 +1,11 @@
+function vec = planSimple
+
+vec = [0 0 0 10 ; 0 10 20 10 ; 20 0 20 10 ; 0 0 20 0 10 0 10 4 ; 10 6 10 10 ];% 2 2 2 8; 2 2 16 2; 16 2 16 8; 2 8 16 8];% 10 0 10 4 ; 10 6 10 10 ; 8 5 12 5];% 0 0 0 20 ; 0 20 30 20 ; 30 0 30 20 ; 0 0 30 0 ];
+for i = 1 : length(vec)
+   xinit = vec(i,1);
+   yinit = vec(i,2);
+   xfin = vec(i,3);
+   yfin = vec(i,4);
+   line([xinit xfin], [yinit yfin]);
+end
+end

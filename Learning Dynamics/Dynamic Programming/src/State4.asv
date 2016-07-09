@@ -1,0 +1,67 @@
+classdef State4 < handle
+    %STATE Summary of this class goes here
+    %   Detailed explanation goes here
+    
+    properties
+        V
+        v
+        Vtab
+        policy
+    end
+    
+    methods
+        %contructor
+        function obj=State4
+            
+            obj.v = 0;
+            obj.V = 0;
+            obj.Vtab = []; 
+            obj.policy = 0;
+        end
+        
+         %methods
+        function policyIteration(obj)
+            
+            policyEvaluation(obj);
+            policyImprovement(obj);
+            
+        end
+        
+        function obj=calculateValue(obj)
+           obj.v = obj.V;
+           obj.V = (Main.R44+ Main.gamma*obj.V) ;
+        end
+        function obj=calculPolicy(obj)
+            obj.policy = 1;
+        end
+        %accessors
+
+        function obj=set.v(obj, newv)
+            obj.v = newv;
+        end
+        function v=get.v(obj)
+            v = obj.v;
+        end
+        function obj=set.V(obj, newV)
+            obj.V = newV;
+        end
+        function V=get.V(obj)
+            V = obj.V;
+        end
+        
+    end
+
+    methods (Access = 'private')
+        function policyEvaluation(obj)
+           obj.v = obj.V;
+           obj.V = max(Main.R44+ Main.gamma*obj.V);
+        end
+        
+        function policyImprovement(obj)
+        
+        end
+       
+    end
+    
+end
+

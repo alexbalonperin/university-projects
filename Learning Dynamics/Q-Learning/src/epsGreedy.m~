@@ -1,0 +1,47 @@
+function [ bestAction reward ] = epsGreedy(s,Q)
+%EPSGREEDY Summary of this function goes here
+%   Detailed explanation goes here
+global actionsX actionsY goal;
+
+eps = 0.2;
+reward = -1;
+xGoal = goal(1);
+yGoal = goal(2);
+valuesOfNextActions = zeros(1,8);
+selection = rand();
+
+if selection > eps
+    for action = 1:8  
+        valuesOfNextActions(action) = Q(s(2),s(1),action);  
+    end
+    maxValue = max(valuesOfNextActions);
+    bestActions = find(maxValue == valuesOfNextActions);
+   sizeOfbestActions = size(bestActions);
+    if  sizeOfbestActions(2) > 1
+        num = ceil(sizeOfbestActions(2)*rand());
+        bestAction = bestActions(num);
+       
+    else
+        bestAction = bestActions(1);
+    end
+    
+    [bestAction outOfBond] = checkPosition(s,bestAction);
+    s_prime = [ s(1) + actionsX(bestAction) s(2)+actionsY(bestAction)];
+    if (s_prime(1) == xGoal && s_prime(2) == yGoal)
+            reward = 10;
+    end    
+else
+    randAction = ceil(8*rand());
+    [bestAction outOfBond] = checkPosition(s,randAction);
+ 
+    if ~outOfBond
+        bestAction = randAction;
+    end
+    s_prime = [s(1) + actionsX(bestAction) s(2)+actionsY(bestAction)];
+    if (s_prime(1) == xGoal && s_prime(2) == yGoal)
+            reward = 10;
+    end 
+end
+
+end
+

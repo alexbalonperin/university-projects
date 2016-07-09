@@ -1,0 +1,44 @@
+function simulation1(Qa)
+
+global nbActions iterations;
+
+nbSelectedMethods = 4;
+
+actionCounterMat = zeros(nbSelectedMethods,nbActions);
+QaTemp = Qa;
+rewardVec = zeros(4, iterations);
+
+for i = 1: nbSelectedMethods
+    
+    [res actionCounter rewardVec] = learningProcess(i, QaTemp, rewardVec);
+ 
+    switch i 
+        case 1
+           result1 = res;
+        case 2
+           result2 = res;
+        case 3
+           result3 = res;
+        case 4
+           result4 = res; 
+    end
+    result1
+    for k=1:nbActions
+        actionCounterMat(i,k) = actionCounter(k);    
+    end
+    
+    switch i 
+        case 1
+           displayResults(result1, 'green', actionCounterMat, rewardVec);
+        case 2
+           displayResults(result2, 'blue', actionCounterMat,rewardVec);
+        case 3
+           displayResults(result3, 'yellow', actionCounterMat,rewardVec);
+        case 4
+           displayResults(result4, 'black', actionCounterMat,rewardVec);
+    end
+
+    
+    i
+    
+end 

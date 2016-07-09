@@ -1,0 +1,10 @@
+function [ x y ] = wind(x,y)
+%WIND Summary of this function goes here
+%   Detailed explanation goes here
+windFactor = 0;
+if x > 8 && x < 11
+    windFactor = 2;
+elseif x == 11  
+
+end
+

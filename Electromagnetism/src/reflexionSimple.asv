@@ -1,0 +1,97 @@
+function RX = reflexionSimple(TX, RX) 
+
+global vec crois resultat;
+
+axis equal;
+%axis off;
+
+for i = 1 : length(vec)
+   xinit = vec(i,1);
+   yinit = vec(i,2);
+   xfin = vec(i,3);
+   yfin = vec(i,4);
+   %cas vertical
+   if xinit == xfin 
+       im = [(2*xinit-TX(1)) (TX(2))];
+       yinter = (((RX(2)-im(2))/(RX(1)-im(1)))*(xinit-im(1)))+im(2);
+       ref = [(xinit) (yinter)];       
+       
+    
+      
+       checkMurMethodeIm =((xinit < RX(1) && xinit > TX(1)) || (xinit > RX(1) && xinit < TX(1)));
+       checkMurPosition = yinter>yinit && yinter<yfin ;
+
+       if( ~checkMurMethodeIm && checkMurPosition)
+           reflexionSurCroisement = false;
+           for k =1: length(crois)
+               if(abs(ref(1)-crois(k,1)) < 1 && abs(ref(2)-crois(k,2)) < 1)
+                   reflexionSurCroisement = true;
+                   break;
+               end
+           end
+           if(~reflexionSurCroisement)  
+                 
+                 counterE = checkIntersection(ref, TX);
+                 thetaI = angleIncident(TX,ref);
+%                   thetaI*180/pi                       %% a virer !!
+                 Tm = coeffTransmission(thetaI);
+                 counterR = checkIntersection(ref, RX);
+%                  thetaI = angleIncident (RX,ref)
+                 Tm = coeffTransmission(thetaI);
+                  Rm = coeffReflexion(thetaI);
+
+                line([ref(1) RX(1)], [ref(2) RX(2)], 'Color', 'g'); 
+                line([TX(1) ref(1)] , [TX(2) ref(2)], 'Color', 'g');
+            
+                dist = distance(TX, ref) + distance(ref, RX);
+                RX(4) = RX(4)+1; 
+             
+          end
+       end
+   end
+   %cas horizontal
+   if(yinit == yfin)
+       im = [(TX(1)) (2*yinit-TX(2))];
+        xinter = ((yinit-im(2))/((RX(2)-im(2))/(RX(1)-im(1))))+im(1);
+        ref = [xinter yinit];
+       
+        
+
+       checkMurMethodeIm = ((yinit < RX(2) && yinit > TX(2)) || (yinit > RX(2) && yinit < TX(2)));
+       checkMurPosition = xinter > xinit &&  xinter < xfin;
+       
+       if(~checkMurMethodeIm && checkMurPosition ) 
+           reflexionSurCroisement = false;
+            for k =1: length(crois)
+               if(abs(ref(1)-crois(k,1)) < 1 && abs(ref(2)-crois(k,2)) < 1)
+                   reflexionSurCroisement = true;
+                   break;
+               end
+           end
+           if(~reflexionSurCroisement)
+                    [counterE senfou]= checkIntersection(ref, TX);
+                    thetaI = pi/2 - angleIncident (TX,ref);
+%                     thetaI*180/pi                                     %% a virer !
+                    Tm = coeffTransmission(thetaI);
+                    [counterR intersectionTab] = checkIntersection(ref, RX);
+                    
+                    lastIntersection = intersectionTab(1);
+                    
+%                     thetaI = angleIncident (ref,RX)-pi/2
+                    Tm = coeffTransmission(thetaI);
+                    Rm = coeffReflexion(thetaI);
+                   
+                    line([ref(1) RX(1)], [ref(2) RX(2)], 'Color', 'g'); 
+                    line([TX(1) ref(1)] , [TX(2) ref(2)], 'Color', 'g');
+                  
+                    dist = distance(TX, ref) + distance(ref, RX);
+                    RX(4) = RX(4)+1;
+   
+           end
+       end
+    end
+end
+
+end
+
+

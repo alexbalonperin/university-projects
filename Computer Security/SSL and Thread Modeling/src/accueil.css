@@ -1,0 +1,42 @@
+body
+{
+   width: 950px;
+   margin: auto; 
+   margin-top: 20px; 
+   margin-bottom: 20px;     
+}
+
+form 
+{
+	text-align:center;
+}
+
+input, textarea
+{
+   font-family: "Times New Roman", Times, serif;
+   margin:5px;
+}
+ 
+input:focus, textarea:focus 
+{
+   background-color: #FFFF99;
+}
+ 
+label
+{
+   color: blue; 
+}
+ 
+legend 
+{
+   font-family: Arial, "Arial Black", Georgia, "Times New Roman", Times, serif;
+   color: #FF9933;
+   font-weight: bold;
+}
+ 
+fieldset
+{
+   margin-bottom: 15px;
+   background-color: #FFFFCC;
+}
+

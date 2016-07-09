@@ -1,0 +1,33 @@
+function plotResults( bestActions, path,counter )
+%UNTITLED2 Summary of this function goes here
+%   Detailed explanation goes here
+global nbActions;
+
+%BOUGER TOUT DE 0.5
+arrowsX = [+0.5,-0.5,0,0,+0.5,-0.5,+0.5,-0.5];
+arrowsY = [0,0,+0.5,-0.5,+0.5,-0.5,-0.5,+0.5];
+xmin = 1;
+ymin = 1;
+xmax = 12;
+ymax = 8;
+
+for i = 1:xmax
+    for j = 1:ymax
+        for k = 1:nbActions
+            quiver(i+0.5,j+0.5,arrowsX(k),arrowsY(k), 'AutoScaleFactor',0.5, 'MaxHeadSize',5, 'Color','b');
+            hold on;
+     
+        end
+        
+    end
+end
+for k = 1 : counter
+    plot(path{counter}(1)),path{counter}(2),'-og');
+    hold on;
+end
+axis([xmin xmax ymin ymax]);
+grid on;
+hold off;
+
+end
+

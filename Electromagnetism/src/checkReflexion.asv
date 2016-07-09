@@ -1,0 +1,55 @@
+function reflexion = checkReflexion(vec, ptMur,RE)
+
+reflexion = true;
+ eps = 1E-1;
+for i = 1 : length(vec)
+   xinit = vec(i,1);
+   yinit = vec(i,2);
+   xfin = vec(i,3);
+   yfin = vec(i,4);
+    %cas horizontal
+    if yinit == yfin
+       if ptMur(1) ~= RE(1)
+            
+            x = droite(ptMur(1), ptMur(2), RE(1), RE(2), yinit,'hor');
+       else
+             %si l'onde rencontre un mur
+              if  ((yinit<ptMur(2) && yinit>RE(2)) || (yinit>ptMur(2) && yinit<RE(2))) && ( RE(1)>xinit && RE(1)<xfin ) 
+                    reflexion = false;
+               end  
+        end
+    end
+     %cas horizontal
+    if yinit == yfin
+       if RX(1) ~= TX(1)
+            if RX(2) ~= TX(2)
+                xinter = droite(TX(1), TX(2), RX(1), RX(2),yinit, 'hor');
+                entreRetE = (RX(1) < xinter && xinter < TX(1)) ||  (RX(1) > xinter && xinter > TX(1));
+                rencontreUnMur = xinit < xinter && xinter < xfin;  
+                if entreRetE && rencontreUnMur
+                    intersection = true;
+                end
+            end
+       else
+             %si l'onde rencontre un mur
+              if  ((yinit<TX(2) && yinit>RX(2)) || (yinit>TX(2) && yinit<RX(2))) && ( RX(1)>xinit && RX(1)<xfin ) 
+                    %plot ( RX(1), yinit, 'o');
+                    intersection = true;
+               end  
+        end
+    end
+    %cas vertical
+    if xinit == xfin
+        y = droite(ptMur(1), ptMur(2), RE(1), RE(2), xinit); 
+      
+        for yMur = yinit : 0.005 : yfin  
+            %si l'onde rencontre un mur
+            if abs(y - yMur) < eps && ((xinit<ptMur(1) && xinit>RE(1)) || (xinit>ptMur(1) && xinit<RE(1))) 
+                  reflexion = false;
+            end
+        end
+    end
+end
+end
+
+

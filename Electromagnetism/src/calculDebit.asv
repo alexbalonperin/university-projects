@@ -1,0 +1,20 @@
+function calculDebit(puissance)
+
+global longueurPlan hauteurPlan;
+
+debit = zeros(longueurPlan,hauteurPlan);      
+for i = 0 : longueurPlan
+    for j = 0 : hauteurPlan
+        debit(i+1,j+1) = 10^((1/30)*puissance(i,j)+4) ;
+
+        if debit(i+1,j+1) > 100 
+            debit (i,j+1) = 100 ;
+        end
+        if debit<10
+            debit(i,j) = 0;
+        end
+
+    end
+end
+Gui_project_DR(vec,debit,TX)
+end

@@ -1,0 +1,224 @@
+classdef Utilities
+   properties(Access = private)
+       nb_files = 25
+   end
+    
+   methods (Static = true)
+       
+       function count = getNbLines(filepath)
+            [status, result] = system( ['wc -l ', filepath] );
+            i=1;
+            while isspace(result(i))
+                i=i+1;
+            end
+            count = result(i);
+            i=i+1;
+            while ~isspace(result(i))
+                count = strcat(count,result(i));
+                i=i+1;
+            end
+       end
+       
+       
+       
+       function [maxtab, mintab]=peakdet(v, delta, x)
+            %PEAKDET Detect peaks in a vector
+            %        [MAXTAB, MINTAB] = PEAKDET(V, DELTA) finds the local
+            %        maxima and minima ("peaks") in the vector V.
+            %        MAXTAB and MINTAB consists of two columns. Column 1
+            %        contains indices in V, and column 2 the found values.
+            %      
+            %        With [MAXTAB, MINTAB] = PEAKDET(V, DELTA, X) the indices
+            %        in MAXTAB and MINTAB are replaced with the corresponding
+            %        X-values.
+            %
+            %        A point is considered a maximum peak if it has the maximal
+            %        value, and was preceded (to the left) by a value lower by
+            %        DELTA.
+
+            % Eli Billauer, 3.4.05 (Explicitly not copyrighted).
+            % This function is released to the public domain; Any use is allowed.
+
+            maxtab = [];
+            mintab = [];
+
+            v = v(:); % Just in case this wasn't a proper vector
+
+            if nargin < 3
+              x = (1:length(v))';
+            else 
+              x = x(:);
+              if length(v)~= length(x)
+                error('Input vectors v and x must have same length');
+              end
+            end
+
+            if (length(delta(:)))>1
+              error('Input argument DELTA must be a scalar');
+            end
+
+            if delta <= 0
+              error('Input argument DELTA must be positive');
+            end
+
+            mn = Inf; mx = -Inf;
+            mnpos = NaN; mxpos = NaN;
+
+            lookformax = 1;
+
+            for i=1:length(v)
+              this = v(i);
+              if this > mx, mx = this; mxpos = x(i); end
+              if this < mn, mn = this; mnpos = x(i); end
+
+              if lookformax
+                if this < mx-delta
+                  maxtab = [maxtab ; mxpos mx];
+                  mn = this; mnpos = x(i);
+                  lookformax = 0;
+                end  
+              else
+                if this > mn+delta
+                  mintab = [mintab ; mnpos mn];
+                  mx = this; mxpos = x(i);
+                  lookformax = 1;
+                end
+              end
+            end
+       end
+       
+       function [max_frequencies] = fourier_transform(y)
+            
+            % FOURIER TRANSFORM
+            %%%%%%%%%%%%%%%%%%%%%%
+
+            Fs = 100; % Sampling frequency 
+            T = 1/Fs; % Sample time 
+            L =  size(y,1);% Length of signal 
+            t = (0:L-1)*T; % Time vector
+
+            NFFT = 2^nextpow2(L); % Next power of 2 from length of y 
+            Y = fft(y,NFFT)/L; % Y = FFT of original data 
+            f = Fs/2*linspace(0,1,NFFT/2+1); % Frequencies used by FFT 
+            %Generate and plot single-sided amplitude spectrum. 
+            amplitudes = 2*abs(Y(1:NFFT/2+1));
+            [maxtab, ~] = peakdet(amplitudes,0.0001,f);
+            maxtab
+            [sorted_max, ~] = sortrows(maxtab,-2); % Sort it 
+            max_frequencies = [sorted_max(1,2),sorted_max(2,2)];
+
+            
+            %       Plot of the peaks
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+            %figure(2);
+            %plot(Fs*t,y); 
+            %title('Original Signal: Current frame');
+
+             figure
+             plot(f,amplitudes); 
+             title('Single-Sided Amplitude Spectrum of y(t)');
+             hold on; %plot(mintab(:,1), mintab(:,2), 'g*');
+            % plot(maxtab(:,1), maxtab(:,2), 'r*');
+            % plot(sorted_max(1,1), sorted_max(1,2), 'g*');
+            % plot(sorted_max(2,1), sorted_max(2,2), 'g*');
+            % hold off;
+
+
+            
+            %       For Information
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+            % Get the main frequencies and amplitudes 
+            %[~, idx] = sort(amplitudes, 'descend'); % Sort it 
+            % NOTE! 
+            % In speech, I will not simply take the <n> largest 
+            % amplitudes, but look for <n> PEAKS in the spectrum. 
+            % For Matlab users: Download and look at peakdet. 
+            %rc = zeros(size(transpose(y))); % rc == Reconstructed signal 
+            %n=2; % No. frequencies to use --> n sine functions (see slides)
+            % Plot the data and overlayed reconstruction 
+            % using the <n> most prominent frequencies 
+            % figure(4);
+            %plot(Fs*t,y, 'b-.'); hold on; % Original data 
+            %title('Original signal and reconstruction'); 
+            % for rr = 1:n % Add up for important frequencies
+            %     rc = rc + amplitudes(idx(rr))*sin(2*pi*f(idx(rr))*t); 
+            % end
+            %plot(Fs*t, rc, 'r-', 'LineWidth',2);
+       end
+   end
+   
+   methods 
+        function tline = readFileTXT(obj, filepath)
+            warning('off');
+            try
+                input_file = fopen(filepath);
+                count = obj.getNbLines(filepath);
+                tline = zeros(str2num(count))
+
+                tline(1) = fgetl(input_file);
+            
+                i=2;
+                while ischar(tline(i))
+                   tline(i) = fgetl(input_file);
+                   i=i+1;
+                end
+                fclose(input_file);
+                %figure(1)
+                %plot(1:size(y),y)
+            catch ERR_MSG
+                disp('Error Reading Data! Check Unit')
+                rethrow(ERR_MSG)
+            end
+            warning('on');
+        end
+        
+        function y = readFileWAV(obj, filepath)
+            try
+                y = wavread(filepath);
+                %figure(1)
+                %plot(1:size(y),y)
+            catch ERR_MSG
+                disp('Error Reading Data! Check Unit')
+                rethrow(ERR_MSG)
+            end
+        end
+        
+        function output_filename = concatFilesWAV(obj, word)
+           output_filename = strcat('files/sounds/',word,'.wav');
+           if exist(output_filename)
+               delete(output_filename); 
+           end
+           
+           output = wavread(strcat('files/soundfile-wav/',word,'_0.wav'));
+           for file_nb=1:obj.nb_files
+               input_filename = strcat('files/soundfile-wav/',word,'_',int2str(file_nb),'.wav');
+               output = [output; wavread(input_filename)];
+           end
+           wavwrite(output, output_filename);           
+        end
+       
+        function output_filename = concatFilesTXT(obj, word)
+           output_filename = strcat('files/sounds/',word,'.txt');
+           delete(output_filename);   
+           output_file = fopen(output_filename, 'a');
+           warning('off', 'MATLAB:fprintf:InputForPercentSIsNotOfClassChar');
+           for file_nb=0:obj.nb_files
+               input_filename = strcat('files/soundfile-txt/',word,'_',int2str(file_nb),'.txt');
+               input_file = fopen(input_filename);
+               tline = fgetl(input_file);
+               fprintf(output_file,'%s\n',tline);
+               while ischar(tline)
+                   tline = fgetl(input_file);
+                   fprintf(output_file,'%s\n',tline);
+               end
+               fclose(input_file);
+           end
+           fclose(output_file);
+           warning('on', 'MATLAB:fprintf:InputForPercentSIsNotOfClassChar');
+           
+       end
+   
+   end
+end

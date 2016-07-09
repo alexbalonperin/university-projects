@@ -1,0 +1,9 @@
+#Battle Properties
+#Thu Feb 16 17:28:14 CET 2012
+robocode.battle.numRounds=10
+robocode.battle.gunCoolingRate=0.1
+robocode.battleField.width=800
+robocode.battle.rules.inactivityTime=450
+robocode.battle.selectedRobots=BalonPerin.DummyTeam*,BalonPerin.DummyTeam*,BalonPerin.DummyTeam*,BalonPerin.DummyTeam*,BalonPerin.DummyTeam*,BalonPerin.DummyTeam*,BalonPerin.DummyTeam*,BalonPerin.DummyTeam*
+robocode.battle.hideEnemyNames=false
+robocode.battleField.height=600

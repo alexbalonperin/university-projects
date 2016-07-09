@@ -1,0 +1,29 @@
+function calculChampDiffraction(TX, RX, ptDiffraction)
+    
+%     global vec;
+    
+%     ptDiff = [ ptDiffraction(1) ptDiffraction(2)];
+%     
+%     if ptDiffraction(1) == ptDiffraction(3)
+%         plot(ptDiff,'bo');
+%     end
+%     if ptDiffraction(2)== ptDiffraction(4)
+%         plot(ptDiff,'yo');
+%     end
+    s2 = distance ( TX, ptDiffraction );
+    phi2 = angleIncident(TX, ptDiffraction );
+    
+    [counterEH counterEV] = checkIntersection(TX,ptDiffraction);
+    Tm = coeffTransmission(phi2)^counterEV *
+  
+    
+    s = distance ( RX, ptDiffraction );
+    phi = 2*pi - angleIncident(RX,ptDiffraction);
+    
+    D = coeffDiffraction (phi, phi2, s, s2) ;
+    
+    ondeDirecte(ptDiffraction, RX,D);
+    reflexionSimple(ptDiffraction, RX, D );
+    reflexionDouble(ptDiffraction, RX, D );
+  
+end

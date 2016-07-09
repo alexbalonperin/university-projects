@@ -1,0 +1,122 @@
+classdef Display
+    %UNTITLED Summary of this class goes here
+    %   Detailed explanation goes here
+    
+    
+    properties
+        tabV
+        tabPi
+        nbOfValues
+        iterations
+    end
+    
+    
+    methods
+        function obj=Display(tabV,tabPi,iterations,nbOfValues)
+         
+            obj.nbOfValues = nbOfValues;
+            obj.iterations = iterations;
+            obj.tabV = tabV;
+            obj.tabPi = tabPi;
+        end
+        function obj=results(obj) 
+            value(obj);
+            policy(obj);
+            policyHisto(obj); 
+        end
+        function obj=resultsPolicy(obj)
+            value(obj);
+            policy(obj);
+        end
+    end
+    
+    methods(Access = private)
+        function value(obj)
+             figure(1)
+             hold on;
+             
+             for j = 1 : Main.numberOfStates
+                
+                switch j
+                    case 1
+                        color = 'green';
+                    case 2
+                        color = 'red';
+                    case 3 
+                        color = 'cyan';
+                    case 4
+                        color = 'black';
+                    case 5
+                        color = 'blue';
+                end
+                plot(0:(obj.nbOfValues-2),obj.tabV(1:(obj.nbOfValues-1),j), color, 'Marker', '.','MarkerSize', 2);
+                l = legend('State1','State2','State3','State4','State5',5);
+                set(l, 'Interpreter','none');
+                xlabel('iterations');
+                ylabel('V');
+                str = {'\fontsize{16}\fontname{candara}Value Iteration Algorithm:'; '\fontsize{12}function state value V over time'};
+               
+                title(str);
+                hold on;
+                
+           
+             end
+            
+        end
+        
+        function policy(obj)
+            figure(2)
+                hold on;
+             for j = 1 : Main.numberOfStates
+                
+                switch j
+                    case 1
+                        color = 'green';
+                        marker = '+';
+                    case 2
+                        color = 'red';
+                        marker = '*';
+                    case 3 
+                        color = 'cyan';
+                        marker = 'o';
+                    case 4
+                        color = 'black';
+                        marker = '.';
+                    case 5
+                        color = 'blue';
+                        marker = 'd';
+                end
+                sizePi = size(obj.tabPi);
+                sizePi(2)
+                while 
+                plot(1:(sizePi(2)-2),obj.tabPi{1:sizePi(2)}(j), color, 'Marker', marker,'MarkerSize', 2, 'LineStyle','none');
+                
+                l = legend('State1','State2','State3','State4','State5',5);
+                set(l, 'Interpreter','none');
+                xlabel('iterations');
+                ylabel('\pi');
+                str = {'\fontsize{16}\fontname{candara}Value Iteration Algorithm:'; '\fontsize{12}state policy over time'};
+               
+                title(str);
+                hold on;
+               
+             end 
+        end
+        
+        function policyHisto(obj)
+            figure(3)
+                hold on;
+             for j = 1 : Main.numberOfStates
+                bar(j,obj.tabPi((obj.iterations-1),j));
+                xlabel('iterations');
+                ylabel('\pi');
+                str = {'\fontsize{16}\fontname{candara}Value Iteration Algorithm:'; '\fontsize{12}state policy over time'};
+               
+                title(str);
+                hold on;
+               
+             end 
+        end
+    end
+end
+
